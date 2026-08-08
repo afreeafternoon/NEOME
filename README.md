@@ -4,129 +4,151 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>NEONE - Lumine Insights Movie AI</title>
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome 圖標 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
+  <!-- 導入 Cyberpunk / Minimal Tech 線型字體 (Syncopate & Megrim) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Megrim&family=Syncopate:wght@300;700&display=swap" rel="stylesheet">
+  
   <style>
     /* NEONE 深邃夜空黑背景 */
     body {
-      background-color: #04060d;
+      background-color: #030712;
       color: #f1f5f9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* 藍光拱門弧線特效（支援 RWD 自適應寬度） */
+    /* CYBERGRAPH 風格字體類別 */
+    .font-cybergraph {
+      font-family: 'Syncopate', 'Megrim', sans-serif;
+      letter-spacing: 0.2em;
+    }
+
+    /* 強效強化版：頂部發光拱門弧線特效 */
     .hero-glow-container {
       position: relative;
     }
     .hero-glow-arc {
       position: absolute;
-      top: -140px;
+      top: -120px;
       left: 50%;
       transform: translateX(-50%);
-      width: 130%;
-      max-width: 900px;
-      height: 280px;
+      width: 140%;
+      max-width: 1000px;
+      height: 320px;
       border-radius: 50%;
-      background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.3) 0%, rgba(14, 165, 233, 0.08) 55%, transparent 75%);
-      border-top: 2px solid rgba(125, 211, 252, 0.85);
-      box-shadow: 0 -15px 60px rgba(56, 189, 248, 0.45), inset 0 10px 30px rgba(56, 189, 248, 0.2);
+      background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.45) 0%, rgba(14, 165, 233, 0.15) 50%, transparent 75%);
+      border-top: 2.5px solid rgba(186, 230, 253, 0.95);
+      box-shadow: 
+        0 -20px 80px rgba(56, 189, 248, 0.7),
+        0 -10px 30px rgba(14, 165, 233, 0.5),
+        inset 0 20px 60px rgba(56, 189, 248, 0.35);
       pointer-events: none;
     }
 
-    /* 頂部兩側高光柱背景 */
+    /* 背景大氣光柱 */
     .bg-light-pillars {
       background-image: 
-        radial-gradient(ellipse 600px 800px at 50% -150px, rgba(56, 189, 248, 0.15), transparent),
-        linear-gradient(to bottom, rgba(15, 23, 42, 0.6), transparent 600px);
+        radial-gradient(ellipse 800px 600px at 50% -50px, rgba(56, 189, 248, 0.22), transparent),
+        radial-gradient(ellipse 400px 300px at 50% 100px, rgba(99, 102, 241, 0.12), transparent);
     }
 
-    /* 微光膠囊徽章 */
-    .glow-badge {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
-      backdrop-filter: blur(12px);
-    }
-
-    /* 白光主按鈕 */
+    /* 精緻白光主按鈕（與 Insights 字體比例相稱） */
     .btn-lumine-primary {
       background: #ffffff;
-      color: #04060d;
+      color: #030712;
       font-weight: 700;
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), 0 0 10px rgba(56, 189, 248, 0.3);
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .btn-lumine-primary:hover {
-      box-shadow: 0 0 40px rgba(56, 189, 248, 0.6);
-      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.7);
+      transform: translateY(-2px) scale(1.02);
     }
     .btn-lumine-primary:active {
       transform: scale(0.97);
     }
 
-    /* 暗色次要按鈕 */
+    /* 暗色玻璃次要按鈕 */
     .btn-lumine-secondary {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.65);
       color: #e2e8f0;
       border: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(12px);
       transition: all 0.2s ease;
     }
     .btn-lumine-secondary:hover {
-      border-color: rgba(56, 189, 248, 0.4);
-      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.5);
+      background: rgba(30, 41, 59, 0.85);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
     }
 
     /* 玻璃幾何面板 */
     .glass-card {
       background: rgba(10, 15, 29, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(16px);
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
     .animate-fade {
-      animation: fadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
   </style>
 </head>
-<body class="min-h-screen bg-light-pillars relative overflow-x-hidden flex flex-col justify-between items-center px-4 sm:px-8 py-6">
+<body class="min-h-screen bg-light-pillars relative overflow-x-hidden flex flex-col justify-between items-center px-4 sm:px-8">
 
-  <!-- 頂部 Header（RWD 自適應寬度，支援 PC / 平板 / 手機） -->
-  <header class="w-full max-w-5xl flex justify-between items-center z-20 py-3 border-b border-slate-800/40">
-    <!-- 左側 LOGO -->
-    <div class="flex items-center gap-2">
-      <span class="text-cyan-400 text-xl leading-none">✦✦</span>
-      <span class="font-extrabold tracking-wider text-xl text-white font-sans">NEONE</span>
+  <!-- 頂部 Header：固定於最上方（Logo + 偏好篩選） -->
+  <header class="w-full max-w-5xl flex justify-between items-center z-50 pt-6 pb-4">
+    
+    <!-- 左側 Logo：精確還原 CYBERGRAPH 極細幾何線條 + O 內部中心點 -->
+    <div class="flex items-center gap-3">
+      <!-- 閃爍青光星號 -->
+      <span class="text-cyan-400 text-sm tracking-tighter filter drop-shadow-[0_0_8px_rgba(56,189,248,0.9)]">✦✦</span>
+      
+      <!-- CYBERGRAPH 精密向量 SVG LOGO -->
+      <svg class="h-6 sm:h-7 w-auto" viewBox="0 0 160 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- N -->
+        <path d="M4 24V4L18 24V4" stroke="#F1F5F9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- E (帶有Cybergraph式的經典圓弧開口 bar) -->
+        <path d="M42 4H28V24H44 M28 14H38" stroke="#F1F5F9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- O (CYBERGRAPH 獨特中心點圓形) -->
+        <circle cx="68" cy="14" r="10" stroke="#38BDF8" stroke-width="1.8"/>
+        <circle cx="68" cy="14" r="2" fill="#38BDF8"/>
+        <!-- N -->
+        <path d="M92 24V4L106 24V4" stroke="#F1F5F9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- E -->
+        <path d="M130 4H116V24H132 M116 14H126" stroke="#F1F5F9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
     
     <!-- 右側控制鈕 -->
-    <div class="flex items-center gap-3 text-xs sm:text-sm font-medium">
-      <button id="toggle-filter-btn" class="btn-lumine-secondary px-4 py-2 rounded-full flex items-center gap-2 text-slate-300 hover:text-white">
-        <i class="fa-solid fa-sliders text-cyan-400 text-xs"></i>
-        <span>偏好篩選</span>
-      </button>
-    </div>
+    <button id="toggle-filter-btn" class="btn-lumine-secondary px-3.5 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white">
+      <i class="fa-solid fa-sliders text-cyan-400 text-xs"></i>
+      <span>偏好篩選</span>
+    </button>
   </header>
 
-  <!-- 可摺疊篩選器（PC 欄位自動擴展為多欄排版） -->
-  <div id="filter-panel" class="hidden w-full max-w-5xl glass-card rounded-2xl p-5 my-4 z-30 space-y-4 border-cyan-500/20">
-    <div class="flex justify-between items-center pb-2 border-b border-slate-800/80">
-      <span class="text-xs sm:text-sm font-semibold text-slate-300 flex items-center gap-2">
+  <!-- 可摺疊篩選面板 -->
+  <div id="filter-panel" class="hidden w-full max-w-5xl glass-card rounded-2xl p-5 my-2 z-40 space-y-4 border-cyan-500/20">
+    <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+      <span class="text-xs font-semibold text-slate-300 flex items-center gap-2">
         <i class="fa-solid fa-filter text-cyan-400"></i> 設定 TMDb 篩選條件
       </span>
       <button id="reset-filter" class="text-xs text-cyan-400 hover:underline">重置條件</button>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs sm:text-sm">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
       <div>
-        <label class="block text-slate-400 mb-1.5 text-xs">電影類型</label>
+        <label class="block text-slate-400 mb-1.5">電影類型</label>
         <select id="filter-genre" class="w-full bg-slate-900/90 text-slate-200 border border-slate-700/80 rounded-xl p-2.5 outline-none focus:border-cyan-400">
           <option value="">全部類型</option>
           <option value="18">劇情片</option>
@@ -139,7 +161,7 @@
         </select>
       </div>
       <div>
-        <label class="block text-slate-400 mb-1.5 text-xs">發音語系</label>
+        <label class="block text-slate-400 mb-1.5">發音語系</label>
         <select id="filter-lang" class="w-full bg-slate-900/90 text-slate-200 border border-slate-700/80 rounded-xl p-2.5 outline-none focus:border-cyan-400">
           <option value="">全部語系</option>
           <option value="ko">韓語</option>
@@ -151,87 +173,81 @@
     </div>
   </div>
 
-  <!-- 主內容區塊 -->
-  <main class="w-full max-w-5xl my-auto py-8 sm:py-12 flex flex-col items-center justify-center z-10 space-y-8">
+  <!-- 主內容區塊 (置中與藍光發光場景) -->
+  <main class="w-full max-w-4xl my-auto py-10 flex flex-col items-center justify-center z-10 space-y-6 text-center">
 
-    <!-- 頂部經典藍光拱門 -->
     <div class="hero-glow-container w-full flex flex-col items-center text-center">
+      <!-- 強化發光拱門弧線 -->
       <div class="hero-glow-arc"></div>
 
-      <!-- 膠囊徽章 -->
-      <div class="glow-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium text-cyan-200 mb-6">
-        <span class="text-cyan-400 text-xs">✦</span>
-        <span>Live TMDb API Connected</span>
-      </div>
-
-      <!-- 未抽取狀態 Hero Section（PC端級別字體與佈局） -->
-      <div id="hero-state" class="space-y-4 px-2 max-w-2xl">
-        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-white">
+      <!-- 未抽取狀態：置中 Headline 區域 -->
+      <div id="hero-state" class="space-y-4 px-2 max-w-2xl pt-4">
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-white">
           Build Faster With<br>
           <span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-200 via-cyan-300 to-indigo-300">
             NEONE Movie Insights
           </span>
         </h1>
 
-        <p class="text-xs sm:text-base text-slate-400 max-w-lg mx-auto leading-relaxed pt-2">
+        <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed pt-1">
           擺脫選擇困難症。點擊下方按鈕，即刻從全球 TMDb 資料庫中為你隨機抽選一部優質電影。
         </p>
       </div>
 
       <!-- 載入中狀態 (預設隱藏) -->
-      <div id="loading-state" class="hidden flex-col items-center justify-center space-y-3 py-10">
-        <div class="w-12 h-12 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-xs sm:text-sm font-medium text-cyan-300 animate-pulse tracking-widest">SEARCHING TMDB DATABASE...</p>
+      <div id="loading-state" class="hidden flex-col items-center justify-center space-y-3 py-8">
+        <div class="w-10 h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-xs font-medium text-cyan-300 animate-pulse tracking-widest">SEARCHING TMDB DATABASE...</p>
       </div>
 
-      <!-- 推薦電影結果卡片（PC 雙欄 / 手機單欄 RWD 自動切換） -->
-      <div id="result-card" class="hidden w-full glass-card rounded-2xl p-5 sm:p-8 text-left border-cyan-500/30 mt-4 animate-fade">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+      <!-- 推薦電影結果卡片（PC 雙欄 / 手機單欄 RWD） -->
+      <div id="result-card" class="hidden w-full glass-card rounded-2xl p-5 sm:p-7 text-left border-cyan-500/30 my-4 animate-fade">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           
-          <!-- 左側海報（PC 端佔 4 欄，手機端滿版） -->
-          <div class="md:col-span-4 lg:col-span-4 flex justify-center">
-            <div class="relative w-full max-w-sm md:max-w-none h-80 sm:h-96 md:h-[400px] rounded-xl overflow-hidden bg-slate-950 shadow-2xl group border border-slate-800">
+          <!-- 左側海報 -->
+          <div class="md:col-span-4 flex justify-center">
+            <div class="relative w-full max-w-xs md:max-w-none h-72 sm:h-80 md:h-[340px] rounded-xl overflow-hidden bg-slate-950 shadow-2xl border border-slate-800">
               <img id="movie-poster" src="" alt="電影海報" 
                    onerror="this.onerror=null; this.src='https://placehold.co/400x600/0f172a/38bdf8?text=Poster+Unavailable';" 
                    class="w-full h-full object-cover">
               
-              <div class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-cyan-300 border border-cyan-500/30">
+              <div class="absolute top-2.5 left-2.5 bg-slate-950/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-bold text-cyan-300 border border-cyan-500/30">
                 <span id="movie-lang-tag"></span>
               </div>
 
-              <div class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-md text-xs font-extrabold text-amber-400 border border-amber-400/30 flex items-center gap-1">
+              <div class="absolute top-2.5 right-2.5 bg-slate-950/80 backdrop-blur-md px-2 py-0.5 rounded text-xs font-extrabold text-amber-400 border border-amber-400/30 flex items-center gap-1">
                 <i class="fa-solid fa-star text-[10px]"></i>
                 <span id="movie-rating">0.0</span>
               </div>
             </div>
           </div>
 
-          <!-- 右側電影詳細資訊（PC 端佔 8 欄，手機端置下） -->
-          <div class="md:col-span-8 lg:col-span-8 space-y-4">
+          <!-- 右側詳細資訊 -->
+          <div class="md:col-span-8 space-y-3">
             <div>
               <div class="flex items-baseline justify-between flex-wrap gap-2">
-                <h2 id="movie-title" class="text-2xl sm:text-3xl font-extrabold text-white tracking-wide"></h2>
-                <span id="movie-year" class="text-sm sm:text-base font-semibold text-cyan-400/80"></span>
+                <h2 id="movie-title" class="text-xl sm:text-2xl font-extrabold text-white tracking-wide"></h2>
+                <span id="movie-year" class="text-xs sm:text-sm font-semibold text-cyan-400"></span>
               </div>
-              <p id="movie-original-title" class="text-xs sm:text-sm text-slate-400 italic pt-1"></p>
+              <p id="movie-original-title" class="text-xs text-slate-400 italic pt-0.5"></p>
             </div>
 
-            <div class="flex items-center gap-2 pt-1">
-              <span id="movie-genre-tag" class="px-3 py-1 rounded-md bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-medium"></span>
+            <div class="flex items-center gap-2">
+              <span id="movie-genre-tag" class="px-2.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-[11px] font-medium"></span>
             </div>
 
             <div class="pt-2 border-t border-slate-800/80">
-              <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">劇情簡介</h3>
-              <p id="movie-overview" class="text-xs sm:text-sm text-slate-300 leading-relaxed line-clamp-6"></p>
+              <h3 class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">劇情簡介</h3>
+              <p id="movie-overview" class="text-xs sm:text-sm text-slate-300 leading-relaxed line-clamp-5"></p>
             </div>
           </div>
 
         </div>
       </div>
 
-      <!-- 置中雙按鈕區塊 -->
-      <div class="flex items-center justify-center gap-4 pt-8 w-full max-w-xs sm:max-w-sm">
-        <button id="recommend-btn" class="btn-lumine-primary flex-1 py-4 px-8 rounded-full text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2.5">
+      <!-- 主按鈕：比例與 Insights 協調之膠囊按鈕 -->
+      <div class="flex items-center justify-center pt-6">
+        <button id="recommend-btn" class="btn-lumine-primary px-6 py-2.5 rounded-full text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
           <i class="fa-solid fa-wand-magic-sparkles text-cyan-600" id="btn-icon"></i>
           <span id="btn-text">請推薦我電影</span>
         </button>
@@ -243,7 +259,7 @@
 
   <!-- 頁尾 -->
   <footer class="w-full max-w-5xl text-center z-10 py-4 border-t border-slate-800/40">
-    <p class="text-xs text-slate-500 font-sans">© NEONE Cinema AI • Powered by TMDb API</p>
+    <p class="text-[11px] text-slate-500 font-sans">© NEONE Cinema AI • Powered by TMDb API</p>
   </footer>
 
   <script>
