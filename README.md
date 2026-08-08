@@ -1,3 +1,6 @@
+---
+layout: null
+---
   <title>NEONE - Lumine Insights Movie AI</title>
   
   <!-- Tailwind CSS CDN -->
