@@ -13,7 +13,7 @@
   <!-- 導入 Cyberpunk / Minimal Tech 線型字體 (Syncopate & Megrim) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Megrim&family=Syncopate:wght@300;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Megrim&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
   
   <style>
     /* NEONE 深邃夜空黑背景 */
@@ -23,42 +23,42 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* CYBERGRAPH 風格字體類別 */
+    /* CYBERGRAPH 風格字體 */
     .font-cybergraph {
       font-family: 'Syncopate', 'Megrim', sans-serif;
-      letter-spacing: 0.2em;
     }
 
-    /* 強效強化版：頂部發光拱門弧線特效 */
-    .hero-glow-container {
-      position: relative;
-    }
-    .hero-glow-arc {
+    /* 背景：緊貼底部的超大邊緣發光半圓形 (Bottom-anchored Semicircle Dome Glow) */
+    .bottom-semicircle-glow {
       position: absolute;
-      top: -120px;
+      bottom: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 140%;
-      max-width: 1000px;
-      height: 320px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.45) 0%, rgba(14, 165, 233, 0.15) 50%, transparent 75%);
+      width: 130vw;
+      max-width: 1100px;
+      height: 380px;
+      /* 直徑原邊緊貼底部，頂部形成半圓弧形 */
+      border-radius: 1000px 1000px 0 0;
+      background: radial-gradient(ellipse at bottom, rgba(56, 189, 248, 0.35) 0%, rgba(14, 165, 233, 0.1) 60%, transparent 85%);
       border-top: 2.5px solid rgba(186, 230, 253, 0.95);
+      border-left: 2px solid rgba(56, 189, 248, 0.4);
+      border-right: 2px solid rgba(56, 189, 248, 0.4);
       box-shadow: 
-        0 -20px 80px rgba(56, 189, 248, 0.7),
-        0 -10px 30px rgba(14, 165, 233, 0.5),
-        inset 0 20px 60px rgba(56, 189, 248, 0.35);
+        0 -20px 80px rgba(56, 189, 248, 0.65),
+        0 -5px 30px rgba(14, 165, 233, 0.4),
+        inset 0 30px 70px rgba(56, 189, 248, 0.25);
       pointer-events: none;
+      z-index: 0;
     }
 
-    /* 背景大氣光柱 */
+    /* 背景大氣微光 */
     .bg-light-pillars {
       background-image: 
-        radial-gradient(ellipse 800px 600px at 50% -50px, rgba(56, 189, 248, 0.22), transparent),
-        radial-gradient(ellipse 400px 300px at 50% 100px, rgba(99, 102, 241, 0.12), transparent);
+        radial-gradient(ellipse 800px 500px at 50% 20%, rgba(56, 189, 248, 0.15), transparent),
+        radial-gradient(ellipse 600px 400px at 50% 80%, rgba(99, 102, 241, 0.1), transparent);
     }
 
-    /* 精緻白光主按鈕（與 Insights 字體比例相稱） */
+    /* 精緻白光主按鈕 */
     .btn-lumine-primary {
       background: #ffffff;
       color: #030712;
@@ -90,7 +90,7 @@
 
     /* 玻璃幾何面板 */
     .glass-card {
-      background: rgba(10, 15, 29, 0.75);
+      background: rgba(10, 15, 29, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(16px);
@@ -107,46 +107,45 @@
 </head>
 <body class="min-h-screen bg-light-pillars relative overflow-x-hidden flex flex-col justify-between items-center px-4 sm:px-8">
 
-  <!-- 頂部 Header：固定於最上方（Logo + 偏好篩選） -->
-  <header class="w-full max-w-5xl flex justify-between items-center z-50 pt-6 pb-4">
+  <!-- 頂部 Header：左上角 Logo（縮小至與 Build 同字號） / 右上角 偏好篩選 -->
+  <header class="w-full max-w-6xl flex justify-between items-center z-50 pt-6 pb-4">
     
-    <!-- 左側 Logo：精確還原 CYBERGRAPH 極細幾何線條 + O 內部中心點 -->
-    <div class="flex items-center gap-3">
-      <!-- 閃爍青光星號 -->
-      <span class="text-cyan-400 text-sm tracking-tighter filter drop-shadow-[0_0_8px_rgba(56,189,248,0.9)]">✦✦</span>
+    <!-- 左上角 Logo (原綠色框物件，移動至原紅色叉叉位置，字號縮小至與 Build 同級 text-2xl sm:text-4xl) -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <span class="text-cyan-400 text-lg sm:text-2xl leading-none filter drop-shadow-[0_0_8px_rgba(56,189,248,0.9)]">✦✦</span>
       
-      <!-- CYBERGRAPH 精密向量 SVG LOGO -->
-      <svg class="h-6 sm:h-7 w-auto" viewBox="0 0 160 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- CYBERGRAPH 精密向量 SVG LOGO (動態配合 Build 字號高度) -->
+      <svg class="h-6 sm:h-9 w-auto" viewBox="0 0 160 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- N -->
-        <path d="M4 24V4L18 24V4" stroke="#F1F5F9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- E (帶有Cybergraph式的經典圓弧開口 bar) -->
-        <path d="M42 4H28V24H44 M28 14H38" stroke="#F1F5F9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- O (CYBERGRAPH 獨特中心點圓形) -->
-        <circle cx="68" cy="14" r="10" stroke="#38BDF8" stroke-width="1.8"/>
-        <circle cx="68" cy="14" r="2" fill="#38BDF8"/>
-        <!-- N -->
-        <path d="M92 24V4L106 24V4" stroke="#F1F5F9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 24V4L18 24V4" stroke="#F1F5F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <!-- E -->
-        <path d="M130 4H116V24H132 M116 14H126" stroke="#F1F5F9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M42 4H28V24H44 M28 14H38" stroke="#F1F5F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- O (CYBERGRAPH 中心點圓形) -->
+        <circle cx="68" cy="14" r="10" stroke="#38BDF8" stroke-width="2"/>
+        <circle cx="68" cy="14" r="2.5" fill="#38BDF8"/>
+        <!-- N -->
+        <path d="M92 24V4L106 24V4" stroke="#F1F5F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- E -->
+        <path d="M130 4H116V24H132 M116 14H126" stroke="#F1F5F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
     
-    <!-- 右側控制鈕 -->
-    <button id="toggle-filter-btn" class="btn-lumine-secondary px-3.5 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium text-slate-300 hover:text-white">
+    <!-- 右上角 控制鈕 (原橘色框物件，移動至桃色框位置) -->
+    <button id="toggle-filter-btn" class="btn-lumine-secondary px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-300 hover:text-white">
       <i class="fa-solid fa-sliders text-cyan-400 text-xs"></i>
       <span>偏好篩選</span>
     </button>
   </header>
 
-  <!-- 可摺疊篩選面板 -->
-  <div id="filter-panel" class="hidden w-full max-w-5xl glass-card rounded-2xl p-5 my-2 z-40 space-y-4 border-cyan-500/20">
+  <!-- 可摺疊篩選面板 (全螢幕 RWD 自適應網格) -->
+  <div id="filter-panel" class="hidden w-full max-w-6xl glass-card rounded-2xl p-5 my-2 z-40 space-y-4 border-cyan-500/20">
     <div class="flex justify-between items-center pb-2 border-b border-slate-800">
-      <span class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+      <span class="text-xs sm:text-sm font-semibold text-slate-300 flex items-center gap-2">
         <i class="fa-solid fa-filter text-cyan-400"></i> 設定 TMDb 篩選條件
       </span>
       <button id="reset-filter" class="text-xs text-cyan-400 hover:underline">重置條件</button>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs sm:text-sm">
       <div>
         <label class="block text-slate-400 mb-1.5">電影類型</label>
         <select id="filter-genre" class="w-full bg-slate-900/90 text-slate-200 border border-slate-700/80 rounded-xl p-2.5 outline-none focus:border-cyan-400">
@@ -173,29 +172,27 @@
     </div>
   </div>
 
-  <!-- 主內容區塊 (置中與藍光發光場景) -->
-  <main class="w-full max-w-4xl my-auto py-10 flex flex-col items-center justify-center z-10 space-y-6 text-center">
+  <!-- 主內容區塊 (置中與半圓形發光場景) -->
+  <main class="w-full max-w-4xl my-auto py-12 flex flex-col items-center justify-center z-10 space-y-6 text-center relative">
 
-    <div class="hero-glow-container w-full flex flex-col items-center text-center">
-      <!-- 強化發光拱門弧線 -->
-      <div class="hero-glow-arc"></div>
-
-      <!-- 未抽取狀態：置中 Headline 區域 -->
-      <div id="hero-state" class="space-y-4 px-2 max-w-2xl pt-4">
-        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-white">
+    <div class="w-full flex flex-col items-center text-center relative">
+      
+      <!-- 未抽取狀態：標題區域 (Build 字號為基準: text-2xl sm:text-4xl) -->
+      <div id="hero-state" class="space-y-4 px-2 max-w-2xl py-6">
+        <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-white">
           Build Faster With<br>
           <span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-200 via-cyan-300 to-indigo-300">
             NEONE Movie Insights
           </span>
         </h1>
 
-        <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed pt-1">
+        <p class="text-xs sm:text-sm md:text-base text-slate-400 max-w-md mx-auto leading-relaxed pt-1">
           擺脫選擇困難症。點擊下方按鈕，即刻從全球 TMDb 資料庫中為你隨機抽選一部優質電影。
         </p>
       </div>
 
       <!-- 載入中狀態 (預設隱藏) -->
-      <div id="loading-state" class="hidden flex-col items-center justify-center space-y-3 py-8">
+      <div id="loading-state" class="hidden flex-col items-center justify-center space-y-3 py-10">
         <div class="w-10 h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
         <p class="text-xs font-medium text-cyan-300 animate-pulse tracking-widest">SEARCHING TMDB DATABASE...</p>
       </div>
@@ -215,7 +212,7 @@
                 <span id="movie-lang-tag"></span>
               </div>
 
-              <div class="absolute top-2.5 right-2.5 bg-slate-950/80 backdrop-blur-md px-2 py-0.5 rounded text-xs font-extrabold text-amber-400 border border-amber-400/30 flex items-center gap-1">
+              <div class="absolute top-2.5 right-2.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-0.5 rounded text-xs font-extrabold text-amber-400 border border-amber-400/30 flex items-center gap-1">
                 <i class="fa-solid fa-star text-[10px]"></i>
                 <span id="movie-rating">0.0</span>
               </div>
@@ -245,8 +242,8 @@
         </div>
       </div>
 
-      <!-- 主按鈕：比例與 Insights 協調之膠囊按鈕 -->
-      <div class="flex items-center justify-center pt-6">
+      <!-- 主按鈕：請推薦我電影 -->
+      <div class="flex items-center justify-center pt-4 z-10">
         <button id="recommend-btn" class="btn-lumine-primary px-6 py-2.5 rounded-full text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
           <i class="fa-solid fa-wand-magic-sparkles text-cyan-600" id="btn-icon"></i>
           <span id="btn-text">請推薦我電影</span>
@@ -255,11 +252,14 @@
 
     </div>
 
+    <!-- 超大邊緣發光半圓形 (直徑緊貼底部) -->
+    <div class="bottom-semicircle-glow"></div>
+
   </main>
 
   <!-- 頁尾 -->
-  <footer class="w-full max-w-5xl text-center z-10 py-4 border-t border-slate-800/40">
-    <p class="text-[11px] text-slate-500 font-sans">© NEONE Cinema AI • Powered by TMDb API</p>
+  <footer class="w-full max-w-6xl text-center z-10 py-4 border-t border-slate-800/40">
+    <p class="text-[11px] sm:text-xs text-slate-500 font-sans">© NEONE Cinema AI • Powered by TMDb API</p>
   </footer>
 
   <script>
