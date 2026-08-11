@@ -306,10 +306,10 @@
         </div>
 
         <!-- 推薦電影結果：無外框卡片，海報＋資訊直接置於光暈背景上 -->
-        <div id="result-card" class="hidden w-full max-w-[692px] mx-auto text-left my-2 transition-opacity duration-[800ms]">
+        <div id="result-card" class="hidden w-full max-w-[900px] mx-auto text-left my-2 transition-opacity duration-[800ms]">
           <div class="flex flex-col sm:flex-row gap-8 sm:gap-9 items-center">
 
-            <div class="relative w-[174px] sm:w-[206px] shrink-0">
+            <div class="relative w-[210px] sm:w-[250px] shrink-0">
               <img id="movie-poster" src="" alt="電影海報"
                    onerror="this.onerror=null; this.src='https://placehold.co/400x600/181c25/38bdf8?text=Poster+Unavailable';"
                    class="w-full aspect-poster object-cover rounded-[10px] shadow-[0_25px_60px_rgba(0,0,0,0.85)]">
@@ -320,7 +320,7 @@
               </div>
             </div>
 
-            <div class="flex-1 space-y-3 text-center sm:text-left">
+            <div class="flex-1 min-w-0 space-y-3 text-center sm:text-left">
               <div>
                 <div class="flex items-baseline justify-center sm:justify-between flex-wrap gap-2">
                   <h2 id="movie-title" class="text-[15px] sm:text-[25px] font-extrabold text-white tracking-wide drop-shadow-[0_0_20px_rgba(56,189,248,0.25)]"></h2>
@@ -330,18 +330,17 @@
               </div>
 
               <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                <span id="movie-genre-tag" class="px-2 py-0.5 rounded bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 text-[10px] font-semibold"></span>
-                <span id="movie-lang-tag" class="px-2 py-0.5 rounded bg-slate-800/70 border border-slate-600/50 text-slate-300 text-[10px] font-semibold"></span>
+                <span id="movie-lang-tag" class="px-2.5 py-1 rounded bg-slate-800/70 border border-slate-600/50 text-slate-300 text-[13px] font-semibold"></span>
               </div>
 
-              <p class="text-xs sm:text-sm text-[#87abc6] space-x-4">
-                <span><span class="text-slate-500">導演：</span><span id="movie-director"></span></span>
-                <span><span class="text-slate-500">主演：</span><span id="movie-cast"></span></span>
-              </p>
+              <div class="text-xs sm:text-sm space-y-1">
+                <p><span style="color:#7C8B9E;">導演：</span><span id="movie-director" style="color:#F1F5F9;"></span></p>
+                <p><span style="color:#7C8B9E;">主演：</span><span id="movie-cast" style="color:#F1F5F9;"></span></p>
+              </div>
 
               <div class="pt-2 border-t border-slate-700/50">
                 <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1 flex items-center justify-center sm:justify-start gap-1.5">
-                  <i class="fa-solid fa-align-left text-[9px]"></i> 劇情簡介
+                  <i class="fa-solid fa-align-left text-xs"></i> 劇情簡介
                 </h3>
                 <p id="movie-overview" class="overview-clamp text-sm text-slate-200 leading-relaxed font-normal"></p>
                 <button type="button" id="overview-toggle" class="hidden mt-1.5 text-xs text-cyan-400 hover:underline font-youyuan">顯示完整劇情</button>
@@ -373,7 +372,6 @@
   <script>
     const TMDB_API_KEY = 'f1baea1a64768c2ace8585a66ad8fbdc';
 
-    const genreDict = { 18: "劇情", 53: "驚悚", 878: "科幻", 16: "動畫", 27: "恐怖", 35: "喜劇", 28: "動作" };
     const langDict = { ko: "韓語", ja: "日語", en: "英語", zh: "華語", cn: "華語" };
 
     const arcLine = document.getElementById('arc-line');
@@ -468,7 +466,6 @@
     const movieOriginalTitle = document.getElementById('movie-original-title');
     const movieYear = document.getElementById('movie-year');
     const movieRating = document.getElementById('movie-rating');
-    const movieGenreTag = document.getElementById('movie-genre-tag');
     const movieLangTag = document.getElementById('movie-lang-tag');
     const movieOverview = document.getElementById('movie-overview');
     const overviewToggle = document.getElementById('overview-toggle');
@@ -537,25 +534,46 @@
       });
     });
 
-    document.addEventListener('click', () => {
+    // 記住「開啟偏好篩選之前」畫面上原本顯示的是首頁標題還是已經抽到的電影結果，
+    // 這樣如果使用者只是點開篩選看一下、沒有實際套用就關掉，畫面能還原成原本的樣子，
+    // 而不是被重置回首頁標題。
+    let resultCardWasVisibleBeforeFilter = false;
+
+    function closeFilterPanel() {
+      hideElement(filterPanel);
+      if (resultCardWasVisibleBeforeFilter) {
+        showWithFade(resultCard);
+      } else {
+        heroState.classList.remove('hidden');
+      }
+      headerFilter.setAttribute('aria-expanded', 'false');
+    }
+
+    document.addEventListener('click', (e) => {
       document.querySelectorAll('.custom-select.is-open').forEach((el) => {
         el.classList.remove('is-open');
         el.querySelector('.select-options').classList.add('hidden');
       });
+
+      // 點擊篩選卡片以外的空白處也會關閉篩選面板（但不要跟「偏好篩選」按鈕自己的 toggle 邏輯衝突）
+      const isFilterOpen = !filterPanel.classList.contains('hidden');
+      if (isFilterOpen && !filterPanel.contains(e.target) && !headerFilter.contains(e.target)) {
+        closeFilterPanel();
+      }
     });
 
     // 點擊「偏好篩選」：以篩選卡片取代首頁標題區（800ms fade-in）
-    headerFilter.addEventListener('click', () => {
+    headerFilter.addEventListener('click', (e) => {
+      e.stopPropagation(); // 避免立刻被上面的「點擊空白處關閉」邏輯誤判成點在外部
       const willOpen = filterPanel.classList.contains('hidden');
       if (willOpen) {
+        resultCardWasVisibleBeforeFilter = !resultCard.classList.contains('hidden');
         hideElement(heroState);
         hideElement(resultCard);
         showWithFade(filterPanel);
         headerFilter.setAttribute('aria-expanded', 'true');
       } else {
-        hideElement(filterPanel);
-        heroState.classList.remove('hidden');
-        headerFilter.setAttribute('aria-expanded', 'false');
+        closeFilterPanel();
       }
     });
 
@@ -666,7 +684,6 @@
         movieYear.textContent = movie.release_date ? `(${movie.release_date.split('-')[0]})` : '';
         movieRating.textContent = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
 
-        movieGenreTag.textContent = genreDict[movie.genre_ids?.[0]] || "電影";
         movieLangTag.textContent = langDict[movie.original_language] || movie.original_language.toUpperCase();
         setOverviewText(movie.overview || "此電影暫無中文劇情摘要說明。");
         movieCast.textContent = credits.cast;
