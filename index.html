@@ -35,9 +35,10 @@
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
+      min-height: 100dvh;
       /* 統一底色 #181c25：不論弧形光暈實際涵蓋範圍多大，露出來的都是設計本身的底色，不會再出現突兀黑邊 */
       background-color: #181c25;
+      overflow-x: hidden;
     }
 
     body {
@@ -51,6 +52,38 @@
     .font-abyssinica { font-family: 'Abyssinica SIL', 'Inter', sans-serif; }
     .font-ubuntu-condensed { font-family: 'Ubuntu Condensed', 'Inter', sans-serif; }
     .aspect-poster { aspect-ratio: 2 / 3; }
+
+    /* 主標題（Build Faster With / NEONE Movie Insights）流體字級：
+       用 clamp() 讓字級隨視窗寬度連續平滑縮放（30px～70px），
+       取代原本 text-3xl / sm:text-5xl / lg:text-[70px] 在斷點瞬間跳級的作法，
+       這樣縮放視窗時字級是逐格漸變、不會有「一次跳一大截」的斷層感。 */
+    .hero-title-fluid {
+      font-size: clamp(1.875rem, 0.84rem + 4.42vw, 4.375rem);
+    }
+
+    /* 兩行主標題之間的上邊距流體化：桌機（≥1280px 附近）維持原本 45px 不變，
+       行動端連續縮小到約 24px，避免小螢幕上兩行標題間距顯得過於空曠。 */
+    .hero-title-gap-fluid {
+      margin-top: clamp(24px, 15.3px + 2.32vw, 45px);
+    }
+
+    /* 副標題說明文字流體字級＋流體最大寬度：
+       字級同樣用 clamp() 連續縮放（12px～19px），縮放節奏與主標題同步，
+       容器寬度也改用 clamp() 連續變化，而不是在單一斷點瞬間從「不換行」切到「換行」。
+       如此一來，縮放視窗時每個字會依序、一個接一個地被擠到第二行，
+       而不是整句文字在某個固定寬度瞬間一次跳到下一行。 */
+    .hero-desc-fluid {
+      font-size: clamp(0.75rem, 0.57rem + 0.77vw, 1.1875rem);
+      max-width: clamp(280px, 92vw, 760px);
+    }
+    /* PC 專用規則（≥1024px）：與行動端規則分開設定，不共用同一套判斷。
+       桌機一律強制單行顯示，不受上面流體最大寬度公式影響，避免在寬螢幕下被誤判換行。 */
+    @media (min-width: 1024px) {
+      .hero-desc-fluid {
+        max-width: none;
+        white-space: nowrap;
+      }
+    }
 
     /* NEONE Movie Insights 漸層文字：色票／方向依你提供的 code 原樣還原 */
     .gradient-text {
@@ -162,24 +195,79 @@
     }
     .select-option:hover { background: rgba(52, 211, 235, 0.14); color: #f8fafc; }
     .select-option.is-selected { background: rgba(52, 211, 235, 0.2); color: #34D3EB; font-weight: 600; }
+
+    /* 偏好篩選卡片內距：手機窄螢幕縮小，sm(≥640px)以上維持原本設計值，避免內容太貼邊 */
+    .filter-panel-card { padding: 20px 16px; }
+    @media (min-width: 640px) {
+      .filter-panel-card { padding: 24px 26px 22px; }
+    }
+
+    /* 「請推薦我電影／抽選中／再換一部」按鈕：改用 clamp() 流體尺寸。
+       clamp() 的最大值（padding/字級）與原本 Tailwind 的 px-7 py-3 text-sm 完全相同，
+       所以桌機（≥1024px）畫面呈現跟以前一模一樣，不受影響；
+       行動端（窄螢幕）則連續縮小到最小值，整體視覺上比原本小一圈（約 10px 幅度），
+       且是隨視窗寬度平滑漸變、不是斷點瞬間跳級，保留動態感。
+       PC 與行動端的數值分開設定，只有行動端會變小。 */
+    .btn-recommend-fluid {
+      padding-top: clamp(9px, 7.27px + 0.46vw, 12px);
+      padding-bottom: clamp(9px, 7.27px + 0.46vw, 12px);
+      padding-left: clamp(18px, 12.23px + 1.54vw, 28px);
+      padding-right: clamp(18px, 12.23px + 1.54vw, 28px);
+      font-size: clamp(0.781rem, 0.727rem + 0.231vw, 0.875rem);
+    }
+
+    /* 偏好篩選卡片｜行動端專用縮小規則（僅 <640px 生效，與 PC/平板完全分開，不影響 640px 以上任何數值）：
+       標題文字、欄位標籤、重置條件、下拉選單觸發按鈕高度與字級、選項列表，
+       整體縮小約 10-15px 的視覺量，降低手機上的壓迫感。 */
+    @media (max-width: 639px) {
+      .filter-heading-text { font-size: 15px !important; }
+      .filter-field-label { font-size: 15px !important; }
+      .reset-link { font-size: 13px !important; }
+      .dropdown-trigger {
+        height: 40px;
+        font-size: 14px;
+        padding: 0 14px;
+      }
+      .select-option {
+        padding: 8px 14px;
+        font-size: 0.75rem;
+      }
+
+      /* 左上 logo：字級整體縮小約 8-10px */
+      .site-logo-text { font-size: 19px !important; }
+      .site-logo-icon { font-size: 16px !important; }
+
+      /* 右上「偏好篩選」按鈕：內距與字級一併縮小，整體視覺變小約 8-10px */
+      .header-filter-btn {
+        padding: 5px 11px !important;
+        font-size: 11px !important;
+        gap: 5px !important;
+      }
+
+      /* 劇情簡介預覽行數：行動端從 5 行收緊為 3 行，減少電影卡片整體高度，
+         幫助使用者更容易在不捲動的情況下就看到「再換一部」按鈕 */
+      .overview-clamp { -webkit-line-clamp: 3; }
+    }
   </style>
 </head>
-<body class="h-screen overflow-hidden bg-[#181c25]">
+<body class="min-h-screen bg-[#181c25]">
 
-  <!-- 整個首頁包在 overflow-hidden 的容器裡：底色統一是 #181c25，
-       弧形光暈只是疊加在上面的裝飾層，露出來的一律是設計本身的顏色，不會有黑邊 -->
-  <div class="relative w-full h-full flex flex-col overflow-hidden">
+  <!-- 整個首頁包在這個容器裡：底色統一是 #181c25，弧形光暈只是疊加在上面的裝飾層。
+       容器改用 min-h-screen（而非固定 h-full + overflow-hidden），
+       這樣電影資訊較長、超出一個畫面高度時，頁面會自然往下撐開並可以捲動查看，
+       不會像過去那樣整個被鎖死在單一畫面高度內滑不動。 -->
+  <div class="relative w-full min-h-screen flex flex-col">
 
     <!-- 環境暈染：獨立於弧線 SVG 之外，永遠鋪滿整個畫面高度，負責讓弧線下方（尤其手機直向、
          畫面較高時）不會出現一整片沒有漸層、看起來像被截斷的空白區域。這層不影響弧線本身的
          形狀比例，純粹是背景的漸層延伸，讓整個畫面「看起來」有被填滿。 -->
-    <div class="absolute inset-0 pointer-events-none z-0" aria-hidden="true"
+    <div class="fixed inset-0 pointer-events-none z-0" aria-hidden="true"
          style="background: radial-gradient(ellipse 140% 100% at 50% 0%, rgba(28,69,99,0.32) 0%, rgba(20,45,69,0.15) 45%, rgba(24,28,37,0) 100%);"></div>
 
     <!-- 背景弧形光暈：寬度永遠等於視窗寬度，高度用 aspect-ratio 跟著等比例縮放，
          確保不管畫面怎麼縮放，弧線的曲度比例都跟附圖一完全一致，不會被拉伸變形 -->
-    <div class="absolute inset-x-0 pointer-events-none z-0" style="top:19%; aspect-ratio:1440/700;" aria-hidden="true">
-      <svg class="w-full h-full" viewBox="0 0 1440 700" preserveAspectRatio="xMidYMin meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div class="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
+      <svg class="w-full h-full" viewBox="0 0 1440 700" preserveAspectRatio="xMidYMax slice" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="arcFill" gradientUnits="userSpaceOnUse" cx="720" cy="700" r="900"
                           gradientTransform="translate(720 700) scale(1 0.521739) translate(-720 -700)">
@@ -200,7 +288,7 @@
             <stop offset="100%" stop-color="#6990A4" stop-opacity="1"/>
           </linearGradient>
 
-          <filter id="arcDropShadow" x="-150%" y="-150%" width="400%" height="400%">
+          <filter id="arcDropShadow" x="-150%" y="-150%" width="400%" height="400%" color-interpolation-filters="sRGB">
             <feMorphology in="SourceAlpha" operator="dilate" radius="50" result="spread"/>
             <feGaussianBlur in="spread" stdDeviation="75" result="shadowBlur"/>
             <feFlood flood-color="#1B698F" flood-opacity="1" result="shadowColor"/>
@@ -222,15 +310,15 @@
     </div>
 
     <!-- 頂部 Header：保留原本左上角 logo，右上角偏好篩選改為開啟 Modal -->
-    <header class="relative z-10 w-full flex justify-between items-end px-6 md:px-10 lg:px-12 pt-7 pb-4">
+    <header class="relative z-10 w-full flex justify-between items-center px-6 md:px-10 lg:px-12 pt-7 pb-4">
 
       <a href="#" id="header-logo" class="opacity-0 transition-opacity duration-1000 flex items-center gap-2.5 cursor-pointer" title="回到首頁">
-        <span class="text-cyan-400 text-xl filter drop-shadow-[0_0_8px_rgba(56,189,248,0.9)]">✦✦</span>
-        <span class="font-logo text-[28px] tracking-[0.15em] text-slate-100">NE <span class="text-cyan-400">⊙</span> NE</span>
+        <span class="text-cyan-400 text-xl filter drop-shadow-[0_0_8px_rgba(56,189,248,0.9)] site-logo-icon">✦✦</span>
+        <span class="font-logo text-[28px] tracking-[0.15em] text-slate-100 site-logo-text">NE <span class="text-cyan-400">⊙</span> NE</span>
       </a>
 
       <button id="header-filter" type="button" aria-haspopup="dialog" aria-expanded="false"
-              class="opacity-0 transition-opacity duration-1000 btn-filter-trigger px-3.5 py-1.5 rounded-full flex items-center gap-2 text-xs font-normal font-youyuan tracking-[0.05em]">
+              class="opacity-0 transition-opacity duration-1000 btn-filter-trigger header-filter-btn px-3.5 py-1.5 rounded-full flex items-center gap-2 text-xs font-normal font-youyuan tracking-[0.05em]">
         <i class="fa-solid fa-sliders text-cyan-400 text-xs"></i>
         <span>偏好篩選</span>
       </button>
@@ -242,22 +330,22 @@
       <div class="w-full max-w-4xl flex flex-col items-center mt-[100px]">
 
         <div id="hero-state" class="w-full flex flex-col items-center">
-          <h1 class="font-zen font-normal text-[#def0f9] text-3xl sm:text-5xl lg:text-[70px] tracking-[0.08em] leading-tight">
+          <h1 class="font-zen font-normal text-[#def0f9] hero-title-fluid tracking-[0.08em] leading-tight">
             <span id="part-build-faster" class="opacity-0 transition-opacity duration-1000">Build Faster </span><span id="part-with" class="opacity-0 transition-opacity duration-1000">With</span>
           </h1>
 
-          <h2 class="font-zen font-normal text-3xl sm:text-5xl lg:text-[70px] tracking-[0.08em] leading-tight mt-[45px]">
+          <h2 class="font-zen font-normal hero-title-fluid hero-title-gap-fluid tracking-[0.08em] leading-tight">
             <span id="part-neone" class="gradient-text opacity-0 transition-opacity duration-1000">NEONE </span><span id="part-movie-insights" class="gradient-text opacity-0 transition-opacity duration-1000">Movie Insights</span>
           </h2>
 
-          <p id="hero-desc" class="opacity-0 transition-opacity duration-1000 font-youyuan text-[#87abc6] text-xs sm:text-sm lg:text-[19px] tracking-[0.05em] leading-relaxed max-w-2xl lg:max-w-none lg:whitespace-nowrap mt-[65px]">
-            擺脫選擇困難症，點擊下方按鈕，即刻從全球 <span class="font-abyssinica">TMDb</span> 資料庫中為你隨機抽選一部優質電影。
+          <p id="hero-desc" class="opacity-0 transition-opacity duration-1000 font-youyuan text-[#87abc6] hero-desc-fluid tracking-[0.05em] leading-relaxed mt-[65px]">
+            擺脫選擇困難症，點擊下方按鈕，<br class="lg:hidden">即刻從全球 <span class="font-abyssinica">TMDb</span> 資料庫中為你隨機抽選一部優質電影。
           </p>
         </div>
 
         <!-- 偏好篩選面板（頁內卡片，取代原本的 Modal，依你提供的 code 還原：標題／重置條件／類型＋語系兩個下拉） -->
         <div id="filter-panel" class="hidden w-full flex flex-col items-center transition-opacity duration-[800ms]">
-          <div class="relative text-left" style="width:960px; max-width:100%; background: rgba(30,37,50,0.90); border: 1px solid #303A4A; border-radius: 10px; padding: 24px 26px 22px;">
+          <div class="relative text-left filter-panel-card" style="width:960px; max-width:100%; background: rgba(30,37,50,0.90); border: 1px solid #303A4A; border-radius: 10px;">
 
             <!-- 標題列：篩選圖示＋今天有什麼想法？，右側重置條件 -->
             <div class="flex items-center justify-between">
@@ -265,18 +353,18 @@
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M3.33333 2.5H16.6667C16.8877 2.5 17.0996 2.5878 17.2559 2.74408C17.4122 2.90036 17.5 3.11232 17.5 3.33333V4.655C17.5 4.876 17.4121 5.08792 17.2558 5.24417L11.9108 10.5892C11.7545 10.7454 11.6667 10.9573 11.6667 11.1783V16.4325C11.6666 16.5591 11.6378 16.684 11.5822 16.7977C11.5267 16.9115 11.446 17.0111 11.3463 17.089C11.2465 17.167 11.1303 17.2211 11.0065 17.2474C10.8827 17.2737 10.7545 17.2715 10.6317 17.2408L8.965 16.8242C8.78464 16.7792 8.6245 16.6752 8.51004 16.5287C8.39558 16.3823 8.33338 16.2017 8.33333 16.0158V11.1783C8.33329 10.9573 8.24546 10.7454 8.08917 10.5892L2.74417 5.24417C2.58788 5.08792 2.50005 4.876 2.5 4.655V3.33333C2.5 3.11232 2.5878 2.90036 2.74408 2.74408C2.90036 2.5878 3.11232 2.5 3.33333 2.5Z" fill="#31BED5" stroke="#41C0D5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span class="font-zen" style="color:#ffffff; font-size:18px; font-weight:400; letter-spacing:0.9px;">今天有什麼想法？</span>
+                <span class="font-zen filter-heading-text" style="color:#ffffff; font-size:18px; font-weight:400; letter-spacing:0.9px;">今天有什麼想法？</span>
               </div>
               <button type="button" id="reset-filter" class="reset-link font-youyuan" style="font-size:15px; font-weight:400; letter-spacing:0.75px;">重置條件</button>
             </div>
 
             <!-- 分隔線 -->
-            <div class="mx-auto" style="width:908px; max-width:100%; height:0; border-top:1px solid #303A4A; margin-top:18px; margin-bottom:20px;"></div>
+            <div class="mx-auto" style="width:100%; max-width:908px; height:0; border-top:1px solid #303A4A; margin-top:18px; margin-bottom:20px;"></div>
 
             <!-- 類型／語系 兩欄 -->
-            <div class="flex flex-nowrap" style="gap:20px;">
-              <div class="custom-select relative" data-select="genre" style="width:440px; max-width:100%; flex-shrink:0;">
-                <div class="font-youyuan" style="color:#ffffff; font-size:18px; font-weight:400; letter-spacing:0.9px; margin-bottom:10px;">電影類型</div>
+            <div class="flex flex-col sm:flex-row" style="gap:20px;">
+              <div class="custom-select relative w-full sm:w-[440px] sm:shrink-0" data-select="genre">
+                <div class="font-youyuan filter-field-label" style="color:#ffffff; font-size:18px; font-weight:400; letter-spacing:0.9px; margin-bottom:10px;">電影類型</div>
                 <button type="button" class="select-trigger dropdown-trigger w-full flex items-center justify-between font-youyuan">
                   <span class="select-label">不限類型</span>
                   <svg class="select-chevron transition-transform duration-200" width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -292,8 +380,8 @@
                 </div>
               </div>
 
-              <div class="custom-select relative" data-select="lang" style="width:440px; max-width:100%; flex-shrink:0;">
-                <div class="font-youyuan" style="color:#ffffff; font-size:18px; font-weight:400; letter-spacing:0.9px; margin-bottom:10px;">語系</div>
+              <div class="custom-select relative w-full sm:w-[440px] sm:shrink-0" data-select="lang">
+                <div class="font-youyuan filter-field-label" style="color:#ffffff; font-size:18px; font-weight:400; letter-spacing:0.9px; margin-bottom:10px;">語系</div>
                 <button type="button" class="select-trigger dropdown-trigger w-full flex items-center justify-between font-youyuan">
                   <span class="select-label">不限語系</span>
                   <svg class="select-chevron transition-transform duration-200" width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -328,16 +416,21 @@
             </div>
 
             <div class="flex-1 min-w-0 space-y-3 text-center sm:text-left">
-              <div>
-                <div class="flex items-baseline justify-center sm:justify-between flex-wrap gap-2">
-                  <h2 id="movie-title" class="text-[15px] sm:text-[25px] font-extrabold text-white tracking-wide drop-shadow-[0_0_20px_rgba(56,189,248,0.25)]"></h2>
-                  <span id="movie-year" class="text-xs font-bold text-cyan-400"></span>
+              <!-- 行動端：中文片名／英文片名（左欄，靠左）＋語系標籤（右欄，靠右）改用左右兩欄 grid；
+                   sm 以上（平板／桌機）用 sm:block sm:space-y-3 還原成原本堆疊排列，桌機外觀完全不變。
+                   導演／演員資訊維持在這個 grid 之外，繼續置中顯示，不受影響。 -->
+              <div class="grid grid-cols-2 gap-2 items-start text-left sm:block sm:space-y-3">
+                <div>
+                  <div class="flex items-baseline justify-start sm:justify-between flex-wrap gap-2">
+                    <h2 id="movie-title" class="text-[15px] sm:text-[25px] font-extrabold text-white tracking-wide drop-shadow-[0_0_20px_rgba(56,189,248,0.25)]"></h2>
+                    <span id="movie-year" class="text-xs font-bold text-cyan-400"></span>
+                  </div>
+                  <p id="movie-original-title" class="text-xs text-slate-400 italic pt-0.5"></p>
                 </div>
-                <p id="movie-original-title" class="text-xs text-slate-400 italic pt-0.5"></p>
-              </div>
 
-              <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                <span id="movie-lang-tag" class="px-2.5 py-1 rounded bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 text-[13px] font-semibold"></span>
+                <div class="flex items-center justify-end sm:justify-start gap-2 flex-wrap">
+                  <span id="movie-lang-tag" class="px-2.5 py-1 rounded bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 text-[13px] font-semibold"></span>
+                </div>
               </div>
 
               <div class="text-xs sm:text-sm space-y-1">
@@ -346,10 +439,10 @@
               </div>
 
               <div class="pt-2 border-t border-slate-700/50">
-                <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1 flex items-center justify-center sm:justify-start gap-1.5">
+                <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1 flex items-center justify-start gap-1.5">
                   <i class="fa-solid fa-align-left text-xs"></i> 劇情簡介
                 </h3>
-                <p id="movie-overview" class="overview-clamp text-sm text-slate-200 leading-relaxed font-normal"></p>
+                <p id="movie-overview" class="overview-clamp text-[11px] sm:text-sm text-slate-200 leading-relaxed font-normal"></p>
                 <button type="button" id="overview-toggle" class="hidden mt-1.5 text-xs text-cyan-400 hover:underline font-youyuan">顯示完整劇情</button>
               </div>
             </div>
@@ -357,8 +450,8 @@
           </div>
         </div>
 
-        <div id="recommend-btn-container" class="opacity-0 transition-opacity duration-1000 flex items-center justify-center mt-[140px]">
-          <button id="recommend-btn" type="button" class="btn-lumine-primary font-ubuntu-condensed px-7 py-3 rounded-full text-sm tracking-[0.05em] flex items-center justify-center gap-2.5">
+        <div id="recommend-btn-container" class="opacity-0 transition-opacity duration-1000 flex items-center justify-center mt-8 sm:mt-[140px]">
+          <button id="recommend-btn" type="button" class="btn-lumine-primary btn-recommend-fluid font-ubuntu-condensed rounded-full tracking-[0.05em] flex items-center justify-center gap-2.5">
             <i class="fa-solid fa-wand-magic-sparkles text-cyan-600" id="btn-icon"></i>
             <span id="btn-text">請推薦我電影</span>
           </button>
