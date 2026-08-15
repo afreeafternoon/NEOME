@@ -58,7 +58,7 @@
        取代原本 text-3xl / sm:text-5xl / lg:text-[70px] 在斷點瞬間跳級的作法，
        這樣縮放視窗時字級是逐格漸變、不會有「一次跳一大截」的斷層感。 */
     .hero-title-fluid {
-      font-size: clamp(1.875rem, 0.84rem + 4.42vw, 4.375rem);
+      font-size: clamp(1.125rem, 0.0417rem + 5.417vw, 4.375rem);
     }
 
     /* 兩行主標題之間的上邊距流體化：桌機（≥1280px 附近）維持原本 45px 不變，
@@ -72,6 +72,13 @@
        容器寬度也改用 clamp() 連續變化，而不是在單一斷點瞬間從「不換行」切到「換行」。
        如此一來，縮放視窗時每個字會依序、一個接一個地被擠到第二行，
        而不是整句文字在某個固定寬度瞬間一次跳到下一行。 */
+
+    /* 弧形背景容器：top/height 由 JS 即時計算並寫入 inline style，
+       這裡加上 transition 讓每次重新定位（例如拖曳視窗）時是平滑過渡，不是瞬間跳動。 */
+    #arc-bg-container {
+      transition: top 0.25s ease, height 0.25s ease;
+    }
+
     .hero-desc-fluid {
       font-size: clamp(0.75rem, 0.57rem + 0.77vw, 1.1875rem);
       max-width: clamp(280px, 92vw, 760px);
@@ -276,13 +283,16 @@
     <div class="fixed inset-0 pointer-events-none z-0" aria-hidden="true"
          style="background: radial-gradient(ellipse 140% 100% at 50% 0%, rgba(28,69,99,0.32) 0%, rgba(20,45,69,0.15) 45%, rgba(24,28,37,0) 100%);"></div>
 
-    <!-- 背景弧形光暈：寬度永遠等於視窗寬度，高度用 aspect-ratio 跟著等比例縮放，
-         確保不管畫面怎麼縮放，弧線的曲度比例都跟附圖一完全一致，不會被拉伸變形 -->
-    <div class="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
+    <!-- 背景弧形光暈：位置改由 JS 動態計算，讓弧頂精準對齊「Build Faster With」與
+         「NEONE Movie Insights」這兩行文字中間的空隙，不論畫面如何縮放都會即時跟著重新對齊
+         （見下方 syncArcPosition()）。top/height 先給一組安全的預設值，避免 JS 執行前出現異常畫面；
+         容器高度刻意比視窗高出許多（JS 會設定為視窗高度的 1.6 倍），確保弧形填色不管往上下怎麼移動，
+         都還能完整覆蓋整個畫面，不會露出沒有光暈的空白區域。 -->
+    <div id="arc-bg-container" class="fixed left-0 w-full pointer-events-none z-0" aria-hidden="true" style="top:0; height:100vh;">
       <svg class="w-full h-full" viewBox="0 0 1440 700" preserveAspectRatio="xMidYMax slice" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="arcFill" gradientUnits="userSpaceOnUse" cx="720" cy="700" r="900"
-                          gradientTransform="translate(720 700) scale(1 0.418478) translate(-720 -700)">
+                          gradientTransform="translate(720 700) scale(1 0.380435) translate(-720 -700)">
             <stop offset="41%" stop-color="#1C4563" stop-opacity="1"/>
             <stop offset="50%" stop-color="#113551" stop-opacity="1"/>
             <stop offset="61%" stop-color="#0D2D45" stop-opacity="1"/>
@@ -315,11 +325,12 @@
         </defs>
 
         <g filter="url(#arcDropShadow)">
-          <path id="arc-fill" d="M -200 700 A 920 385 0 0 1 1640 700 Z" fill="url(#arcFill)" class="opacity-0 transition-opacity duration-1000"/>
-          <path id="arc-line" d="M -200 700 A 920 385 0 0 1 1640 700" fill="none" stroke="url(#arcStroke)" stroke-width="2.5"/>
+          <path id="arc-fill" class="arc-fill-el opacity-0 transition-opacity duration-1000" d="M -200 700 A 920 350 0 0 1 1640 700 Z" fill="url(#arcFill)"/>
+          <path id="arc-line" class="arc-line-el" d="M -200 700 A 920 350 0 0 1 1640 700" fill="none" stroke="url(#arcStroke)" stroke-width="1.1"/>
         </g>
       </svg>
     </div>
+
 
     <!-- 頂部 Header：保留原本左上角 logo，右上角偏好篩選改為開啟 Modal -->
     <header class="relative z-10 w-full flex justify-between items-stretch px-6 md:px-10 lg:px-12 pt-7 pb-4">
@@ -342,11 +353,11 @@
       <div class="w-full max-w-4xl flex flex-col items-center mt-[100px]">
 
         <div id="hero-state" class="w-full flex flex-col items-center">
-          <h1 class="font-zen font-normal text-[#def0f9] hero-title-fluid tracking-[0.08em] leading-tight">
+          <h1 id="hero-line-1" class="font-zen font-normal text-[#def0f9] hero-title-fluid tracking-[0.08em] leading-tight whitespace-nowrap">
             <span id="part-build-faster" class="opacity-0 transition-opacity duration-1000">Build Faster </span><span id="part-with" class="opacity-0 transition-opacity duration-1000">With</span>
           </h1>
 
-          <h2 class="font-zen font-normal hero-title-fluid hero-title-gap-fluid tracking-[0.08em] leading-tight">
+          <h2 id="hero-line-2" class="font-zen font-normal hero-title-fluid hero-title-gap-fluid tracking-[0.08em] leading-tight whitespace-nowrap">
             <span id="part-neone" class="gradient-text opacity-0 transition-opacity duration-1000">NEONE </span><span id="part-movie-insights" class="gradient-text opacity-0 transition-opacity duration-1000">Movie Insights</span>
           </h2>
 
@@ -499,17 +510,51 @@
 
     const langDict = { ko: "韓語", ja: "日語", en: "英語", zh: "華語", cn: "華語", hi: "印度語", th: "泰語", vi: "越語", fr: "法語", de: "德語", es: "西班牙語", it: "義大利語", ru: "俄語" };
 
-    const arcLine = document.getElementById('arc-line');
-    const arcFill = document.getElementById('arc-fill');
+    const arcLines = document.querySelectorAll('.arc-line-el');
+    const arcFills = document.querySelectorAll('.arc-fill-el');
 
     function playArcSweep() {
-      arcFill.classList.add('opacity-0');
-      arcLine.classList.remove('animate-draw-arc');
-      void arcLine.offsetWidth;
+      arcFills.forEach(el => el.classList.add('opacity-0'));
+      arcLines.forEach(el => el.classList.remove('animate-draw-arc'));
+      void arcLines[0].offsetWidth;
       requestAnimationFrame(() => {
-        arcLine.classList.add('animate-draw-arc');
-        arcFill.classList.remove('opacity-0');
+        arcLines.forEach(el => el.classList.add('animate-draw-arc'));
+        arcFills.forEach(el => el.classList.remove('opacity-0'));
       });
+    }
+
+    // 讓弧頂精準對齊「Build Faster With」與「NEONE Movie Insights」兩行文字中間的空隙，
+    // 不論畫面怎麼縮放都即時重新對齊；hero-state 被隱藏時（電影卡片顯示中）跳過量測，
+    // 避免量到已隱藏元素的錯誤座標，此時弧線維持在最後一次算出的正確位置。
+    const arcBgContainer = document.getElementById('arc-bg-container');
+    const arcSyncLine1 = document.getElementById('hero-line-1');
+    const arcSyncLine2 = document.getElementById('hero-line-2');
+
+    function syncArcPosition() {
+      if (!arcBgContainer || !arcSyncLine1 || !arcSyncLine2) return;
+      if (heroState.classList.contains('hidden')) return;
+
+      const r1 = arcSyncLine1.getBoundingClientRect();
+      const r2 = arcSyncLine2.getBoundingClientRect();
+      if (r1.height === 0 || r2.height === 0) return;
+
+      const gapCenterY = (r1.bottom + r2.top) / 2;
+      const containerHeight = window.innerHeight * 1.6;
+      const containerTop = gapCenterY - containerHeight * 0.5;
+
+      arcBgContainer.style.top = containerTop + 'px';
+      arcBgContainer.style.height = containerHeight + 'px';
+    }
+
+    let arcSyncRaf = null;
+    function requestArcSync() {
+      if (arcSyncRaf) cancelAnimationFrame(arcSyncRaf);
+      arcSyncRaf = requestAnimationFrame(syncArcPosition);
+    }
+
+    window.addEventListener('resize', requestArcSync);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(requestArcSync);
     }
 
     /* =========================================================
@@ -552,6 +597,8 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      requestArcSync();
+
       setTimeout(() => {
         playArcSweep();
       }, 500);
@@ -571,6 +618,7 @@
         document.getElementById('header-filter').classList.remove('opacity-0');
         document.getElementById('hero-desc').classList.remove('opacity-0');
         document.getElementById('recommend-btn-container').classList.remove('opacity-0');
+        requestArcSync();
       }, 3200);
     });
 
@@ -621,6 +669,7 @@
       heroState.classList.remove('hidden');
       btnText.textContent = "請推薦我電影";
       btnIcon.className = "fa-solid fa-wand-magic-sparkles text-cyan-600";
+      requestArcSync();
     });
 
     // 自訂下拉選單邏輯（電影類型／語系）
