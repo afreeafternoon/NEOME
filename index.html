@@ -310,7 +310,7 @@
             <stop offset="100%" stop-color="#6990A4" stop-opacity="1"/>
           </linearGradient>
 
-          <filter id="arcDropShadow" x="-150%" y="-150%" width="400%" height="400%" color-interpolation-filters="sRGB">
+          <filter id="arcDropShadow" x="-15%" y="-100%" width="130%" height="300%" color-interpolation-filters="sRGB">
             <feMorphology in="SourceAlpha" operator="dilate" radius="50" result="spread"/>
             <feGaussianBlur in="spread" stdDeviation="75" result="shadowBlur"/>
             <feFlood flood-color="#1B698F" flood-opacity="1" result="shadowColor"/>
@@ -386,7 +386,7 @@
 
             <!-- 類型／語系 兩欄 -->
             <div class="flex flex-col sm:flex-row" style="gap:20px;">
-              <div class="custom-select relative w-full sm:w-[440px] sm:shrink-0" data-select="genre">
+              <div class="custom-select relative w-full sm:flex-1 sm:min-w-0" data-select="genre">
                 <div class="font-youyuan filter-field-label" style="color:#ffffff; font-size:18px; font-weight:400; letter-spacing:0.9px; margin-bottom:10px;">電影類型</div>
                 <button type="button" class="select-trigger dropdown-trigger w-full flex items-center justify-between font-youyuan">
                   <span class="select-label">不限類型</span>
@@ -407,7 +407,7 @@
                 </div>
               </div>
 
-              <div class="custom-select relative w-full sm:w-[440px] sm:shrink-0" data-select="lang">
+              <div class="custom-select relative w-full sm:flex-1 sm:min-w-0" data-select="lang">
                 <div class="font-youyuan filter-field-label" style="color:#ffffff; font-size:18px; font-weight:400; letter-spacing:0.9px; margin-bottom:10px;">語系</div>
                 <button type="button" class="select-trigger dropdown-trigger w-full flex items-center justify-between font-youyuan">
                   <span class="select-label">不限語系</span>
@@ -764,6 +764,15 @@
       srAnnouncement.textContent = '篩選條件已重置';
     });
 
+    // 帶逾時保護的 fetch：某些網路環境下連線可能卡住（已送出但一直沒有回應，也不會自然噴錯），
+    // 導致畫面永遠停在「抽選中」。這裡用 AbortController 設定 10 秒逾時，
+    // 超過就主動中止並丟出錯誤，讓下面既有的 catch／錯誤提示邏輯可以正常接手。
+    function fetchWithTimeout(url, ms = 10000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), ms);
+      return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+    }
+
     async function fetchRandomMovieFromTMDb() {
       const genre = selectedValues.genre;
       const lang = selectedValues.lang;
@@ -774,7 +783,7 @@
       if (lang) baseUrl += `&with_original_language=${lang}`;
 
       try {
-        const res1 = await fetch(`${baseUrl}&page=1`);
+        const res1 = await fetchWithTimeout(`${baseUrl}&page=1`);
         const data1 = await res1.json();
 
         if (!data1.results || data1.results.length === 0) {
@@ -785,7 +794,7 @@
         const totalPages = Math.min(data1.total_pages || 1, 30);
         const randomPage = Math.floor(Math.random() * totalPages) + 1;
 
-        const res2 = await fetch(`${baseUrl}&page=${randomPage}`);
+        const res2 = await fetchWithTimeout(`${baseUrl}&page=${randomPage}`);
         const data2 = await res2.json();
 
         const validMovies = (data2.results || []).filter(m => m.poster_path && m.overview);
@@ -802,7 +811,7 @@
 
     async function fetchMovieCredits(movieId) {
       try {
-        const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=zh-TW`);
+        const res = await fetchWithTimeout(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=zh-TW`);
         const data = await res.json();
         const names = (data.cast || []).slice(0, 3).map(c => c.name);
         const director = (data.crew || []).find(c => c.job === 'Director');
@@ -815,16 +824,23 @@
       }
     }
 
-    // 等新海報圖片真的下載完成才 resolve，避免卡片淡入時畫面還停在上一部海報
+    // 等新海報圖片真的下載完成才 resolve，避免卡片淡入時畫面還停在上一部海報；
+    // 加上 6 秒安全逾時──某些網路環境下圖片可能一直不觸發 load/error，
+    // 逾時就強制繼續，避免畫面永遠卡在「抽選中」不會往下走。
     function loadPosterImage(src) {
       return new Promise((resolve) => {
-        const done = () => {
-          moviePoster.removeEventListener('load', done);
-          moviePoster.removeEventListener('error', done);
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          moviePoster.removeEventListener('load', finish);
+          moviePoster.removeEventListener('error', finish);
+          clearTimeout(timer);
           resolve();
         };
-        moviePoster.addEventListener('load', done, { once: true });
-        moviePoster.addEventListener('error', done, { once: true });
+        const timer = setTimeout(finish, 6000);
+        moviePoster.addEventListener('load', finish, { once: true });
+        moviePoster.addEventListener('error', finish, { once: true });
         moviePoster.src = src;
       });
     }
