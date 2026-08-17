@@ -354,7 +354,7 @@
         </div>
 
         <!-- 偏好篩選面板（頁內卡片，取代原本的 Modal，依你提供的 code 還原：標題／重置條件／類型＋語系兩個下拉） -->
-        <div id="filter-panel" class="hidden w-full flex flex-col items-center transition-opacity duration-[800ms]">
+        <div id="filter-panel" class="hidden w-full flex flex-col items-center pb-[220px] sm:pb-0 transition-opacity duration-[800ms]">
           <div class="relative text-left filter-panel-card" style="width:960px; max-width:100%; background: rgba(30,37,50,0.90); border: 1px solid #303A4A; border-radius: 10px;">
 
             <!-- 標題列：篩選圖示＋今天有什麼想法？，右側重置條件 -->
@@ -423,10 +423,10 @@
         </div>
 
         <!-- 推薦電影結果：無外框卡片，海報＋資訊直接置於光暈背景上 -->
-        <div id="result-card" class="hidden w-full max-w-[900px] mx-auto text-left -mt-3 mb-2 sm:my-2 transition-opacity duration-[800ms]">
+        <div id="result-card" class="hidden w-full max-w-[900px] mx-auto text-left -mt-[17px] mb-2 sm:my-2 transition-opacity duration-[800ms]">
           <div class="flex flex-col sm:flex-row gap-8 sm:gap-9 items-center">
 
-            <div class="relative w-[200px] sm:w-[250px] shrink-0 -mt-6 sm:mt-0">
+            <div class="relative w-[194px] sm:w-[250px] shrink-0 -mt-6 sm:mt-0">
               <img id="movie-poster" src="" alt="電影海報"
                    onerror="this.onerror=null; this.src='https://placehold.co/400x600/181c25/38bdf8?text=Poster+Unavailable';"
                    class="w-full aspect-poster object-cover rounded-[10px] shadow-[0_25px_60px_rgba(0,0,0,0.85)]">
@@ -473,7 +473,7 @@
           </div>
         </div>
 
-        <div id="recommend-btn-container" class="opacity-0 transition-opacity duration-1000 flex items-center justify-center mt-8 sm:mt-[140px]">
+        <div id="recommend-btn-container" class="opacity-0 transition-opacity duration-1000 flex items-center justify-center mt-[27px] sm:mt-[140px]">
           <button id="recommend-btn" type="button" class="btn-lumine-primary btn-recommend-fluid font-ubuntu-condensed rounded-full tracking-[0.05em] flex items-center justify-center gap-2.5">
             <i class="fa-solid fa-wand-magic-sparkles text-cyan-600" id="btn-icon"></i>
             <span id="btn-text">請推薦我電影</span>
