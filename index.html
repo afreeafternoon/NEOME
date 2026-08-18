@@ -335,9 +335,13 @@
     </header>
 
     <!-- 主內容區塊 -->
-    <main class="relative z-10 flex-1 w-full flex flex-col items-center justify-center text-center px-6">
+    <main class="relative z-10 flex-1 w-full flex flex-col items-center text-center px-6">
 
-      <div class="w-full max-w-4xl flex flex-col items-center mt-[100px]">
+      <!-- 內容置中區：只有這個區塊會依照目前顯示的畫面（首頁標題／篩選面板／電影資訊卡）的高度來置中，
+           按鈕被移到這個區塊「外面」，兩者互不影響。 -->
+      <div class="flex-1 w-full flex flex-col items-center justify-center">
+
+        <div class="w-full max-w-4xl flex flex-col items-center mt-[100px]">
 
         <div id="hero-state" class="w-full flex flex-col items-center">
           <h1 id="hero-line-1" class="font-zen font-normal text-[#def0f9] hero-title-fluid tracking-[0.08em] leading-tight whitespace-nowrap">
@@ -354,7 +358,7 @@
         </div>
 
         <!-- 偏好篩選面板（頁內卡片，取代原本的 Modal，依你提供的 code 還原：標題／重置條件／類型＋語系兩個下拉） -->
-        <div id="filter-panel" class="hidden w-full flex flex-col items-center pb-[220px] sm:pb-0 transition-opacity duration-[800ms]">
+        <div id="filter-panel" class="hidden w-full flex flex-col items-center transition-opacity duration-[800ms]">
           <div class="relative text-left filter-panel-card" style="width:960px; max-width:100%; background: rgba(30,37,50,0.90); border: 1px solid #303A4A; border-radius: 10px;">
 
             <!-- 標題列：篩選圖示＋今天有什麼想法？，右側重置條件 -->
@@ -473,13 +477,17 @@
           </div>
         </div>
 
-        <div id="recommend-btn-container" class="opacity-0 transition-opacity duration-1000 flex items-center justify-center mt-[27px] sm:mt-[140px]">
-          <button id="recommend-btn" type="button" class="btn-lumine-primary btn-recommend-fluid font-ubuntu-condensed rounded-full tracking-[0.05em] flex items-center justify-center gap-2.5">
-            <i class="fa-solid fa-wand-magic-sparkles text-cyan-600" id="btn-icon"></i>
-            <span id="btn-text">請推薦我電影</span>
-          </button>
         </div>
 
+      </div>
+
+      <!-- 按鈕：獨立於內容置中區之外，用固定距離貼齊頁尾方向，
+           不管上面顯示的是首頁標題、篩選面板、還是電影資訊卡，這裡的位置永遠一致。 -->
+      <div id="recommend-btn-container" class="opacity-0 transition-opacity duration-1000 flex items-center justify-center pb-[66px] sm:pb-24">
+        <button id="recommend-btn" type="button" class="btn-lumine-primary btn-recommend-fluid font-ubuntu-condensed rounded-full tracking-[0.05em] flex items-center justify-center gap-2.5">
+          <i class="fa-solid fa-wand-magic-sparkles text-cyan-600" id="btn-icon"></i>
+          <span id="btn-text">請推薦我電影</span>
+        </button>
       </div>
 
       <p class="sr-only" aria-live="polite" role="status" id="sr-announcement"></p>
